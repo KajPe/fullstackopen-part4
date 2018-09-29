@@ -54,9 +54,34 @@ const mostBlogs = (blogs) => {
   return authors[0]
 }
 
+// Who have written most likes
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) {
+    return {}
+  }
+  var authors = blogs.reduce(function(found, blog) {
+    var idx = found.findIndex((b => b.author === blog.author))
+    if (idx === -1) {
+      // Initial value
+      found.push( { author: blog.author, likes: blog.likes } )
+    } else {
+      // Add-up for author
+      found[idx].likes += blog.likes
+    }
+    return found
+  }, [])
+  // Sort by likes
+  authors.sort(function(a, b){
+    return b.likes - a.likes
+  })
+  // And now the first one in the array has most likes
+  return authors[0]
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
