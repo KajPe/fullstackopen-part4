@@ -1,0 +1,17 @@
+
+### Should give 404
+GET http://localhost:3003/
+
+### Get blogs
+GET http://localhost:3003/api/blogs
+
+### Post blog
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+  "title": "Testing",
+  "author": "me",
+  "url": "http://www.google.com/",
+  "likes": 2
+}
