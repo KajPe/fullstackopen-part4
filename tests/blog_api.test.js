@@ -104,6 +104,48 @@ describe('Blog API Tests', () => {
 
       expect(respPost.body.likes).toBe(0)
     })
+
+    test('Post a new blog (missing title)', async () => {
+      const respBefore = await api
+        .get('/api/blogs')
+      const blogcount1 = respBefore.body.length
+
+      const newBlog = {
+        author: 'Mr New Blog',
+        url: 'https://www.google.com/'
+      }
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+
+      const respAfter = await api
+        .get('/api/blogs')
+      const blogcount2 = respAfter.body.length
+
+      expect(blogcount2).toBe(blogcount1)
+    })
+
+    test('Post a new blog (missing url)', async () => {
+      const respBefore = await api
+        .get('/api/blogs')
+      const blogcount1 = respBefore.body.length
+
+      const newBlog = {
+        title: 'Missing url',
+        author: 'Mr New Blog'
+      }
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+
+      const respAfter = await api
+        .get('/api/blogs')
+      const blogcount2 = respAfter.body.length
+
+      expect(blogcount2).toBe(blogcount1)
+    })
   })
 
   afterAll(() => {

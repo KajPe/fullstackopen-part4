@@ -25,3 +25,23 @@ content-type: application/json
   "author": "me",
   "url": "http://www.google.com/"
 }
+
+### Post blog (missing title)
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+  "author": "me",
+  "url": "http://www.google.com/",
+  "likes": 3
+}
+
+### Post blog (missing url)
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+  "title": "Testing no likes",
+  "author": "me",
+  "likes": 3
+}
