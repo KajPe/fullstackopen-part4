@@ -9,12 +9,14 @@ const blogsRouter = require('./controllers/blogs')
 const config = require('./utils/config')
 
 mongoose.connect(config.mongoUrl, { useNewUrlParser: true })
-  .then( () => {
-    console.log('connected to database', config.mongoUrl)
-  })
-  .catch( err => {
-    console.log(err)
-  })
+mongoose.Promise = global.Promise
+mongoose.connection.on('error', (err) => {
+  console.log('MongoDB connection error', err)
+  process.exit(1)
+})
+mongoose.connection.on('connected', function () {
+  console.log('connected to database', config.mongoUrl)
+})
 
 app.use(cors())
 app.use(bodyParser.json())

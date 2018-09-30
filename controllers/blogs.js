@@ -1,12 +1,18 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 
-blogsRouter.get('/', (request, response) => {
-  Blog
-    .find({})
-    .then(blogs => {
+blogsRouter.get('/', async (request, response) => {
+  try {
+    const blogs = await Blog.find({})
+    if (blogs) {
       response.json(blogs)
-    })
+    } else {
+      // blogs is undefined, throw an error
+      throw 0
+    }
+  } catch (exception) {
+    response.status(500).send({ error: 'Unable to get blogs' })
+  }
 })
 
 blogsRouter.post('/', (request, response) => {
