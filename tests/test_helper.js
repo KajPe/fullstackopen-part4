@@ -29,6 +29,7 @@ const populateDatabaseWithOneBlog = async () => {
       author: blog.author,
       url: blog.url,
       likes: blog.likes,
+      user: blog.user
     }
     return new Blog(b)
   })
@@ -47,6 +48,7 @@ const populateDatabaseWithSixBlogs = async () => {
       author: blog.author,
       url: blog.url,
       likes: blog.likes,
+      user: blog.user
     }
     return new Blog(b)
   })
@@ -54,18 +56,9 @@ const populateDatabaseWithSixBlogs = async () => {
   await Promise.all(promiseArr)
 }
 
-const blogFormat = (blog) => {
-  return {
-    title: blog.title,
-    author: blog.author,
-    url: blog.url,
-    likes: blog.likes
-  }
-}
-
 const blogsInDatabase = async () => {
   const blogs = await Blog.find({})
-  return blogs.map(blogFormat)
+  return blogs
 }
 
 module.exports = {
@@ -73,7 +66,6 @@ module.exports = {
   populateDatabaseWithOneBlog,
   populateDatabaseWithSixBlogs,
   blogsInDatabase,
-  blogFormat,
   clearUserDatabase,
   usersInDatabase,
   userInDatabase

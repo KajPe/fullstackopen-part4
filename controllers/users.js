@@ -4,7 +4,10 @@ const bcryptjs = require('bcryptjs')
 
 usersRouter.get('/', async (request, response) => {
   try {
-    const users = await User.find({})
+    const users = await User
+      .find({})
+      .populate('blogs', { likes: 1, author: 1, title: 1, url: 1 })
+
     if (users) {
       response.json(users.map(User.format))
     } else {
@@ -34,7 +37,8 @@ usersRouter.post('/', async (request, response) => {
       username: request.body.username,
       name: request.body.name,
       passwordHash: passwordHash,
-      adult: (request.body.adult ? request.body.adult : true)
+      adult: (request.body.adult ? request.body.adult : true),
+      blogs: []
     }
     const user = new User(newUser)
     const savedUser = await user.save()

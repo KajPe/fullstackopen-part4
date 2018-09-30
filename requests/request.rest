@@ -47,10 +47,10 @@ content-type: application/json
 }
 
 ### Delete blog
-DELETE http://localhost:3003/api/blogs/5bb0ccd396f32504a49e371d
+DELETE http://localhost:3003/api/blogs/5bb1359748d44c24b4e134a9
 
 ### Update blog
-PUT http://localhost:3003/api/blogs/5bb0e0d5957fe82060a9d447
+PUT http://localhost:3003/api/blogs/5bb13682b235f51be89cb1b4
 content-type: application/json
 
 {
@@ -69,7 +69,7 @@ POST http://localhost:3003/api/users
 content-type: application/json
 
 {
-  "username": "ttaestaaja",
+  "username": "ab",
   "name": "Teppo Testaaja",
   "password": "Sec",
   "adult": false

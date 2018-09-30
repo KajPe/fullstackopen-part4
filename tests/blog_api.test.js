@@ -3,6 +3,7 @@ describe('Blog API Tests', () => {
   const { app, server } = require('../index')
   const api = supertest(app)
   const helper = require('./test_helper')
+  const Blog = require('../models/blog')
 
   describe('User API Tests', () => {
     beforeAll(async () => {
@@ -18,7 +19,8 @@ describe('Blog API Tests', () => {
           username: 'ttestaaja',
           name: 'Teppo Testaaja',
           password: 'Secret1',
-          adult: true
+          adult: true,
+          blogs: []
         }
 
         await api
@@ -44,7 +46,8 @@ describe('Blog API Tests', () => {
           username: 'ttestaaja',
           name: 'Teppo Testaaja',
           password: 'Secret1',
-          adult: true
+          adult: true,
+          blogs: []
         }
 
         await api
@@ -79,7 +82,8 @@ describe('Blog API Tests', () => {
           username: 'shortone',
           name: 'Short password',
           password: 'ab',
-          adult: true
+          adult: true,
+          blogs: []
         }
 
         await api
@@ -100,7 +104,8 @@ describe('Blog API Tests', () => {
         const newUser = {
           username: 'ttestaaja',
           name: 'Teppo Testaaja',
-          password: 'Secret1'
+          password: 'Secret1',
+          blogs: []
         }
 
         const savedUser = await api
@@ -159,7 +164,8 @@ describe('Blog API Tests', () => {
         title: 'Test a new blog',
         author: 'Mr New Blog',
         url: 'https://www.google.com/',
-        likes: 23
+        likes: 23,
+        user: 'xxxxxxxxxx'
       }
       const theBlog = await api
         .post('/api/blogs')
@@ -170,7 +176,7 @@ describe('Blog API Tests', () => {
       const blogsInDatabaseAfter = await helper.blogsInDatabase()
 
       expect(blogsInDatabaseAfter.length).toBe(blogsInDatabaseBefore.length + 1)
-      expect(helper.blogFormat(theBlog.body)).toEqual(newBlog)
+      expect(Blog.formatTest(theBlog.body)).toEqual(Blog.formatTest(newBlog))
     })
 
     test('Post a new blog (with likes)', async () => {
@@ -180,7 +186,8 @@ describe('Blog API Tests', () => {
         title: 'No likes',
         author: 'Mr New Blog',
         url: 'https://www.google.com/',
-        likes: 62
+        likes: 62,
+        user: 'xxxxxxxxxx'
       }
       const respPost = await api
         .post('/api/blogs')
@@ -200,7 +207,8 @@ describe('Blog API Tests', () => {
       const newBlog = {
         title: 'No likes',
         author: 'Mr New Blog',
-        url: 'https://www.google.com/'
+        url: 'https://www.google.com/',
+        user: 'xxxxxxxxxx'
       }
       const respPost = await api
         .post('/api/blogs')
@@ -219,7 +227,8 @@ describe('Blog API Tests', () => {
 
       const newBlog = {
         author: 'Mr New Blog',
-        url: 'https://www.google.com/'
+        url: 'https://www.google.com/',
+        user: 'xxxxxxxxxx'
       }
       await api
         .post('/api/blogs')
@@ -236,7 +245,8 @@ describe('Blog API Tests', () => {
 
       const newBlog = {
         title: 'Missing url',
-        author: 'Mr New Blog'
+        author: 'Mr New Blog',
+        user: 'xxxxxxxxxx'
       }
       await api
         .post('/api/blogs')
@@ -268,7 +278,8 @@ describe('Blog API Tests', () => {
         title: '=== BLOG TO BE DELETED ===',
         author: 'Mr New Blog',
         url: 'https://www.google.com/',
-        likes: 34
+        likes: 34,
+        user: 'xxxxxxxxxx'
       }
       const respPost = await api
         .post('/api/blogs')
@@ -284,7 +295,7 @@ describe('Blog API Tests', () => {
       expect(blogsAfter).toContain('=== BLOG TO BE DELETED ===')
 
       await api
-        .delete(`/api/blogs/${respPost.body._id}`)
+        .delete(`/api/blogs/${respPost.body.id}`)
         .expect(204)
 
       // Count of blogs should be minus 1
@@ -317,10 +328,11 @@ describe('Blog API Tests', () => {
         title: 'BLOG UPDATED',
         author: 'Mr Nobody',
         url: 'https://www.google.com/',
-        likes: 312
+        likes: 312,
+        user: 'xxxxxxxxxx'
       }
       const respPut = await api
-        .put(`/api/blogs/${response.body[0]._id}`)
+        .put(`/api/blogs/${response.body[0].id}`)
         .send(UpdateBlog)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -329,9 +341,9 @@ describe('Blog API Tests', () => {
       expect(blogsInDatabaseAfter.length).toBe(blogsInDatabaseBefore.length)
 
       // Check the API returned updated blog
-      expect(helper.blogFormat(respPut.body)).toEqual(UpdateBlog)
+      expect(Blog.formatTest(respPut.body)).toEqual(Blog.formatTest(UpdateBlog))
       // Check the database contains updated blog
-      expect(blogsInDatabaseAfter[0]).toEqual(UpdateBlog)
+      expect(Blog.formatTest(blogsInDatabaseAfter[0])).toEqual(Blog.formatTest(UpdateBlog))
     })
   })
 
