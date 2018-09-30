@@ -71,6 +71,39 @@ describe('Blog API Tests', () => {
 
       expect(blogcount2).toBe(blogcount1 + 1)
     })
+
+    test('Post a new blog (with likes)', async () => {
+      // Likes is left undefined
+      const newBlog = {
+        title: 'No likes',
+        author: 'Mr New Blog',
+        url: 'https://www.google.com/',
+        likes: 62
+      }
+      const respPost = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+      expect(respPost.body.likes).toBe(62)
+    })
+
+    test('Post a new blog (no likes)', async () => {
+      // Likes is left undefined
+      const newBlog = {
+        title: 'No likes',
+        author: 'Mr New Blog',
+        url: 'https://www.google.com/'
+      }
+      const respPost = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+      expect(respPost.body.likes).toBe(0)
+    })
   })
 
   afterAll(() => {

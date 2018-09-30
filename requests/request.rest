@@ -10,8 +10,18 @@ POST http://localhost:3003/api/blogs
 content-type: application/json
 
 {
-  "title": "Testing",
+  "title": "Testing likes 3",
   "author": "me",
   "url": "http://www.google.com/",
-  "likes": 2
+  "likes": 3
+}
+
+### Post blog (no likes)
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+  "title": "Testing no likes",
+  "author": "me",
+  "url": "http://www.google.com/"
 }
