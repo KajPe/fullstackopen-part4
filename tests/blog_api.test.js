@@ -131,6 +131,49 @@ describe('Blog API Tests', () => {
     })
   })
 
+  describe('Delete blogs', () => {
+    test('Delete a blog', async () => {
+      // Add a blog which should be deleted
+      const blogsInDatabaseBefore = await helper.blogsInDatabase()
+
+      // The blog shouldn't be there
+      const blogsBefore = blogsInDatabaseBefore.map(blog => blog.title)
+      expect(blogsBefore).not.toContain('=== BLOG TO BE DELETED ===')
+
+      // Add the to-be-deleted blog
+      const newBlog = {
+        title: '=== BLOG TO BE DELETED ===',
+        author: 'Mr New Blog',
+        url: 'https://www.google.com/',
+        likes: 34
+      }
+      const respPost = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+      const blogsInDatabaseAfter = await helper.blogsInDatabase()
+      expect(blogsInDatabaseAfter.length).toBe(blogsInDatabaseBefore.length + 1)
+
+      // The new blog should be in the database
+      const blogsAfter = blogsInDatabaseAfter.map(blog => blog.title)
+      expect(blogsAfter).toContain('=== BLOG TO BE DELETED ===')
+
+      await api
+        .delete(`/api/blogs/${respPost.body._id}`)
+        .expect(204)
+
+      // Count of blogs should be minus 1
+      const blogsInDatabaseAfterDelete = await helper.blogsInDatabase()
+      expect(blogsInDatabaseAfterDelete.length).toBe(blogsInDatabaseAfter.length - 1)
+
+      // And the blog should not be there anymore
+      const blogsAfterDelete = blogsInDatabaseAfterDelete.map(blog => blog.title)
+      expect(blogsAfterDelete).not.toContain('=== BLOG TO BE DELETED ===')
+    })
+  })
+
   afterAll(() => {
     server.close()
   })
