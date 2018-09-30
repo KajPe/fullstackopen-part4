@@ -1,6 +1,20 @@
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const blog_data = require('./blog_data')                // Load blog data
 
+const clearUserDatabase = async () => {
+  await User.remove({})
+}
+
+const usersInDatabase = async () => {
+  const users = await User.find({})
+  return users
+}
+
+const userInDatabase = async (id) => {
+  const user = await User.findById(id)
+  return user
+}
 const clearDatabase = async () => {
   await Blog.remove({})
 }
@@ -59,5 +73,8 @@ module.exports = {
   populateDatabaseWithOneBlog,
   populateDatabaseWithSixBlogs,
   blogsInDatabase,
-  blogFormat
+  blogFormat,
+  clearUserDatabase,
+  usersInDatabase,
+  userInDatabase
 }

@@ -18,6 +18,15 @@ usersRouter.get('/', async (request, response) => {
 
 usersRouter.post('/', async (request, response) => {
   try {
+    if (request.body.password.length < 3) {
+      return response.status(400).json({ error: 'password must be at least 3 characters long' })
+    }
+
+    const existingUser = await User.find({ username: request.body.username })
+    if (existingUser.length > 0) {
+      return response.status(400).json({ error: 'username must be unique' })
+    }
+
     const saltRounds = 10
     const passwordHash = await bcryptjs.hash(request.body.password, saltRounds)
 
@@ -25,7 +34,7 @@ usersRouter.post('/', async (request, response) => {
       username: request.body.username,
       name: request.body.name,
       passwordHash: passwordHash,
-      adult: request.body.adult
+      adult: (request.body.adult ? request.body.adult : true)
     }
     const user = new User(newUser)
     const savedUser = await user.save()

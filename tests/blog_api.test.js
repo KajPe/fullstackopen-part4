@@ -1,16 +1,129 @@
-
 describe('Blog API Tests', () => {
   const supertest = require('supertest')
   const { app, server } = require('../index')
   const api = supertest(app)
   const helper = require('./test_helper')
 
-  beforeAll(async () => {
-    // Remove all blogs from database and write predefined blogs
-    await helper.populateDatabaseWithSixBlogs()
+  describe('User API Tests', () => {
+    beforeAll(async () => {
+      // Remove all users from database
+      await helper.clearUserDatabase()
+    })
+
+    describe('User API', () => {
+      test('Create user', async () => {
+        const usersBefore = await helper.usersInDatabase()
+
+        const newUser = {
+          username: 'ttestaaja',
+          name: 'Teppo Testaaja',
+          password: 'Secret1',
+          adult: true
+        }
+
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(201)
+          .expect('Content-Type', /application\/json/)
+
+        const usersAfter = await helper.usersInDatabase()
+        expect(usersAfter.length).toBe(usersBefore.length + 1)
+
+        const usernames = usersAfter.map(user => user.username)
+        expect(usernames).toContain(newUser.username)
+      })
+
+      test('Create user twice, should fail', async () => {
+        // Remove all users from database
+        await helper.clearUserDatabase()
+
+        const usersBefore = await helper.usersInDatabase()
+
+        const newUser = {
+          username: 'ttestaaja',
+          name: 'Teppo Testaaja',
+          password: 'Secret1',
+          adult: true
+        }
+
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(201)
+          .expect('Content-Type', /application\/json/)
+
+        const usersAfter = await helper.usersInDatabase()
+        expect(usersAfter.length).toBe(usersBefore.length + 1)
+
+        const usernames = usersAfter.map(user => user.username)
+        expect(usernames).toContain(newUser.username)
+
+        // Try to create same user second time
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(400)
+
+        const usersAfterSecond = await helper.usersInDatabase()
+        expect(usersAfterSecond.length).toBe(usersAfter.length)
+      })
+
+      test('Test short password', async () => {
+        // Remove all users from database
+        await helper.clearUserDatabase()
+
+        const usersBefore = await helper.usersInDatabase()
+
+        const newUser = {
+          username: 'shortone',
+          name: 'Short password',
+          password: 'ab',
+          adult: true
+        }
+
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(400)
+
+        const usersAfter = await helper.usersInDatabase()
+        expect(usersAfter.length).toBe(usersBefore.length)
+      })
+
+      test('Adult not configured, should be true', async () => {
+        // Remove all users from database
+        await helper.clearUserDatabase()
+
+        const usersBefore = await helper.usersInDatabase()
+
+        const newUser = {
+          username: 'ttestaaja',
+          name: 'Teppo Testaaja',
+          password: 'Secret1'
+        }
+
+        const savedUser = await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(201)
+
+        const usersAfter = await helper.usersInDatabase()
+        expect(usersAfter.length).toBe(usersBefore.length + 1)
+
+        // Check adult is true
+        const u = await helper.userInDatabase(savedUser.body.id)
+        expect(u.adult).toBe(true)
+      })
+    })
   })
 
   describe('Get blogs', () => {
+    beforeAll(async () => {
+      // Remove all blogs from database and write predefined blogs
+      await helper.populateDatabaseWithSixBlogs()
+    })
+
     test('All blogs returned as json', async () => {
       const blogsInDatabase  = await helper.blogsInDatabase()
       const response = await api
@@ -33,6 +146,11 @@ describe('Blog API Tests', () => {
   })
 
   describe('Post blogs', () => {
+    beforeAll(async () => {
+      // Remove all blogs from database and write predefined blogs
+      await helper.populateDatabaseWithSixBlogs()
+    })
+
     test('Post a new blog', async () => {
       // Get current blogs from database
       const blogsInDatabaseBefore = await helper.blogsInDatabase()
@@ -132,6 +250,11 @@ describe('Blog API Tests', () => {
   })
 
   describe('Delete blogs', () => {
+    beforeAll(async () => {
+      // Remove all blogs from database and write predefined blogs
+      await helper.populateDatabaseWithSixBlogs()
+    })
+
     test('Delete a blog', async () => {
       // Add a blog which should be deleted
       const blogsInDatabaseBefore = await helper.blogsInDatabase()
@@ -175,6 +298,11 @@ describe('Blog API Tests', () => {
   })
 
   describe('Update blogs', () => {
+    beforeAll(async () => {
+      // Remove all blogs from database and write predefined blogs
+      await helper.populateDatabaseWithSixBlogs()
+    })
+
     test('Update a blog', async () => {
       const blogsInDatabaseBefore = await helper.blogsInDatabase()
 
