@@ -59,3 +59,18 @@ content-type: application/json
   "url": "me@com",
   "likes": 5
 }
+
+
+### Get users
+GET http://localhost:3003/api/users
+
+### Create user
+POST http://localhost:3003/api/users
+content-type: application/json
+
+{
+  "username": "ttestaaja",
+  "name": "Teppo Testaaja",
+  "password": "Secret1",
+  "adult": false
+}
