@@ -1,6 +1,15 @@
 const blogsRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+
+const getTokenFrom = (request) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7)
+  }
+  return null
+}
 
 blogsRouter.get('/', async (request, response) => {
   try {
@@ -21,6 +30,12 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
   try {
+    const token = getTokenFrom(request)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!token || !decodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' })
+    }
+
     if (request.body.title === undefined) {
       return response.status(400).json({ error: 'title missing' })
     }
@@ -28,8 +43,8 @@ blogsRouter.post('/', async (request, response) => {
       return response.status(400).json({ error: 'url missing' })
     }
 
-    // Get first user in database
-    let user = await User.findOne({})
+    // Get user based on token
+    let user = await User.findById(decodedToken.id)
 
     const newblog = {
       title: request.body.title,
@@ -46,7 +61,11 @@ blogsRouter.post('/', async (request, response) => {
 
     response.status(201).json(Blog.format(savedBlog))
   } catch (exception) {
-    response.status(500).send({ error: 'Unable to save blog' })
+    if (exception.name === 'JsonWebTokenError' ) {
+      response.status(401).json({ error: exception.message })
+    } else {
+      response.status(500).send({ error: 'Unable to save blog' })
+    }
   }
 })
 
