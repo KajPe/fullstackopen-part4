@@ -8,6 +8,7 @@ GET http://localhost:3003/api/blogs
 ### Post blog
 POST http://localhost:3003/api/blogs
 content-type: application/json
+Authorization:  bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiIiwiaWQiOiI1YmIxM2ZhMTVjMjJiMzIzNjA5NTE1ZTciLCJpYXQiOjE1MzgzNDM3NDR9.X-1YhYXYHnDWWNCL-amB9fvoxVonRmsrYcrpdC_Wd6g
 
 {
   "title": "Testing likes 3",
