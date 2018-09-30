@@ -174,6 +174,39 @@ describe('Blog API Tests', () => {
     })
   })
 
+  describe('Update blogs', () => {
+    test('Update a blog', async () => {
+      const blogsInDatabaseBefore = await helper.blogsInDatabase()
+
+      // Get all blogs
+      const response = await api
+        .get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      // Update first blog
+      const UpdateBlog = {
+        title: 'BLOG UPDATED',
+        author: 'Mr Nobody',
+        url: 'https://www.google.com/',
+        likes: 312
+      }
+      const respPut = await api
+        .put(`/api/blogs/${response.body[0]._id}`)
+        .send(UpdateBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      const blogsInDatabaseAfter = await helper.blogsInDatabase()
+      expect(blogsInDatabaseAfter.length).toBe(blogsInDatabaseBefore.length)
+
+      // Check the API returned updated blog
+      expect(helper.blogFormat(respPut.body)).toEqual(UpdateBlog)
+      // Check the database contains updated blog
+      expect(blogsInDatabaseAfter[0]).toEqual(UpdateBlog)
+    })
+  })
+
   afterAll(() => {
     server.close()
   })

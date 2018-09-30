@@ -47,4 +47,15 @@ content-type: application/json
 }
 
 ### Delete blog
-DELETE http://localhost:3003/api/blogs/5bb0ccd396f32504a49e3719
+DELETE http://localhost:3003/api/blogs/5bb0ccd396f32504a49e371d
+
+### Update blog
+PUT http://localhost:3003/api/blogs/5bb0e0d5957fe82060a9d447
+content-type: application/json
+
+{
+  "title": "Testing PUT",
+  "author": "me",
+  "url": "me@com",
+  "likes": 5
+}

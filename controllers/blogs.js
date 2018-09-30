@@ -46,4 +46,26 @@ blogsRouter.delete('/:id', async (request, response) => {
   }
 })
 
+blogsRouter.put('/:id', async (request, response) => {
+  try {
+    if (request.body.title === undefined) {
+      return response.status(400).json({ error: 'title missing' })
+    }
+    if (request.body.url === undefined) {
+      return response.status(400).json({ error: 'url missing' })
+    }
+
+    const blog = {
+      title: request.body.title,
+      author: (request.body.author ? request.body.author: 'N/A'),
+      url: request.body.url,
+      likes: (request.body.likes ? request.body.likes : 0)
+    }
+    const blogUpdated = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true } )
+    response.status(200).json(blogUpdated)
+  } catch (exception) {
+    response.status(400).send({ error: 'malformatted id' })
+  }
+})
+
 module.exports = blogsRouter
